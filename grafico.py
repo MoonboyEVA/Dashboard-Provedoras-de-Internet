@@ -62,7 +62,7 @@ with tab1:
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    st.header('Ranking Horizontal de Provedoras')
+    st.header('Ranking Geral de Provedoras')
     fig2 = px.bar(
         df_grouped,
         x=df_grouped.columns[1],
