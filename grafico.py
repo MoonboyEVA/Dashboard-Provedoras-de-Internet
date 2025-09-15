@@ -13,12 +13,13 @@ df_mercado = pd.read_excel('Participacao_Mercado.xlsx')
 df_meio = pd.read_excel('Meio_Acesso.xlsx')
 
 # Unifica nomes e coloca tudo em maiúsculo
-df_mercado[df_mercado.columns[0]] = df_mercado[df_mercado.columns[0]].replace({
-    'NMULTIFIBRA TELECOMUNICACAO LTDA': 'N-multimidia Telecomunicacoes Ltda',
-    'N-multimidia Telecomunicacoes Ltda': 'N-multimidia Telecomunicacoes Ltda'
-})
 df_mercado[df_mercado.columns[0]] = df_mercado[df_mercado.columns[0]].str.upper()
 df_meio[df_meio.columns[0]] = df_meio[df_meio.columns[0]].str.upper()
+
+# Corrige nome específico
+df_mercado[df_mercado.columns[0]] = df_mercado[df_mercado.columns[0]].replace({
+    'N-MULTIMIDIA TELECOMUNICACOES LTDA': 'N-MULTIFIBRA'
+})
 
 # Agrupa acessos por provedora
 df_grouped = df_mercado.groupby(df_mercado.columns[0], as_index=False)[df_mercado.columns[1]].sum()
