@@ -42,7 +42,12 @@ with col2:
     st.write("")
 
 # Tabs para dividir o dashboard
-tab1, tab2, tab3 = st.tabs(['📊 Comparar Provedoras', '🏆 Ranking Horizontal', '🔎 Buscar Provedora'])
+tab1, tab2, tab3, tab4 = st.tabs([
+    '📊 Comparar Provedoras',
+    '🏆 Ranking Horizontal',
+    '🔎 Buscar Provedora',
+    '🛠 Meios de Acesso'
+])
 
 with tab1:
     st.markdown("<h3 style='color: #34495e;'>Comparação entre Provedoras</h3>", unsafe_allow_html=True)
@@ -152,6 +157,25 @@ with tab3:
         else:
             st.warning('Provedora não encontrada.')
 
-# Sessão opcional: mostrar dados de meio de acesso
-with st.expander('Ver dados de Meio de Acesso'):
+with tab4:
+    st.markdown("<h3 style='color: #34495e;'>Meios de Acesso</h3>", unsafe_allow_html=True)
+    st.write("Distribuição dos acessos por tipo de meio de acesso.")
+    # Supondo que a primeira coluna é o nome do meio e a segunda é o total de acessos
+    fig_pizza = px.pie(
+        df_meio,
+        names=df_meio.columns[0],
+        values=df_meio.columns[1],
+        color_discrete_sequence=px.colors.qualitative.Bold,
+        hole=0.3,
+        labels={df_meio.columns[0]: 'Meio de Acesso', df_meio.columns[1]: 'Acessos'}
+    )
+    fig_pizza.update_traces(textinfo='percent+label', pull=[0.05]*len(df_meio))
+    fig_pizza.update_layout(
+        font=dict(size=16),
+        margin=dict(t=60, r=40, b=40, l=40),
+        legend_title_text='Meio de Acesso',
+        height=500
+    )
+    st.plotly_chart(fig_pizza, use_container_width=True)
+    st.markdown("### Dados detalhados")
     st.dataframe(df_meio, use_container_width=True)
