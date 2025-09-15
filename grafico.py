@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
+
+# Configura tema do Plotly para fundo branco e fonte maior
+pio.templates.default = "plotly_white"
 
 # Carrega as planilhas
 df_mercado = pd.read_excel('Participacao_Mercado.xlsx')
@@ -21,16 +25,22 @@ df_grouped = df_grouped.sort_values(df_grouped.columns[1], ascending=False)
 # Total de acessos
 total_acessos = df_grouped[df_grouped.columns[1]].sum()
 
-st.title('Dashboard Provedoras de Internet')
+st.set_page_config(page_title="Dashboard Provedoras de Internet", layout="wide")
+st.markdown("<h1 style='text-align: center; color: #2c3e50;'>Dashboard Provedoras de Internet</h1>", unsafe_allow_html=True)
+st.markdown("---")
 
 # Sessão de métricas gerais
-st.metric('Total de Acessos', f'{int(total_acessos):,}')
+col1, col2 = st.columns([2, 8])
+with col1:
+    st.metric('Total de Acessos', f'{int(total_acessos):,}')
+with col2:
+    st.write("")
 
 # Tabs para dividir o dashboard
-tab1, tab2, tab3 = st.tabs(['Comparar Provedoras', 'Ranking Horizontal', 'Buscar Provedora'])
+tab1, tab2, tab3 = st.tabs(['📊 Comparar Provedoras', '🏆 Ranking Horizontal', '🔎 Buscar Provedora'])
 
 with tab1:
-    st.header('Comparação entre Provedoras')
+    st.markdown("<h3 style='color: #34495e;'>Comparação entre Provedoras</h3>", unsafe_allow_html=True)
     provedoras = df_grouped[df_grouped.columns[0]].tolist()
     selecionadas = st.multiselect(
         'Selecione as provedoras para comparar:',
@@ -44,13 +54,15 @@ with tab1:
         y=df_selecionadas.columns[1],
         text=df_selecionadas.columns[1],
         color=df_selecionadas.columns[0],
-        color_discrete_sequence=px.colors.sequential.Viridis,
+        color_discrete_sequence=px.colors.qualitative.Bold,
         labels={df_selecionadas.columns[0]: 'OPERADORA', df_selecionadas.columns[1]: 'ACESSOS'},
         hover_data={df_selecionadas.columns[0]: True, df_selecionadas.columns[1]: ':.0f'}
     )
     fig.update_traces(
         texttemplate='%{text:,}',
         textposition='outside',
+        marker_line_width=2,
+        marker_line_color='black',
         hovertemplate='<b>%{x}</b><br>Acessos: %{y:,}<extra></extra>'
     )
     fig.update_layout(
@@ -58,11 +70,15 @@ with tab1:
         yaxis_title='Acessos',
         showlegend=False,
         margin=dict(t=80, r=40, b=40, l=40),
+        font=dict(size=16),
+        height=500,
+        bargap=0.25,
     )
+    fig.update_xaxes(tickangle=45, automargin=True)
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    st.header('Ranking Geral de Provedoras')
+    st.markdown("<h3 style='color: #34495e;'>Ranking Geral de Provedoras</h3>", unsafe_allow_html=True)
     fig2 = px.bar(
         df_grouped,
         x=df_grouped.columns[1],
@@ -70,13 +86,15 @@ with tab2:
         orientation='h',
         text=df_grouped.columns[1],
         color=df_grouped.columns[0],
-        color_discrete_sequence=px.colors.sequential.Viridis,
+        color_discrete_sequence=px.colors.qualitative.Bold,
         labels={df_grouped.columns[0]: 'OPERADORA', df_grouped.columns[1]: 'ACESSOS'},
         hover_data={df_grouped.columns[0]: True, df_grouped.columns[1]: ':.0f'}
     )
     fig2.update_traces(
         texttemplate='%{text:,}',
         textposition='outside',
+        marker_line_width=2,
+        marker_line_color='black',
         hovertemplate='<b>%{y}</b><br>Acessos: %{x:,}<extra></extra>'
     )
     fig2.update_layout(
@@ -85,32 +103,40 @@ with tab2:
         yaxis_title='Operadora',
         showlegend=False,
         margin=dict(t=80, r=40, b=40, l=40),
-        height=600
+        font=dict(size=16),
+        height=max(600, 30 * len(df_grouped)),  # barras mais largas se houver muitas operadoras
+        bargap=0.25,
     )
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab3:
-    st.header('Buscar Provedora')
+    st.markdown("<h3 style='color: #34495e;'>Buscar Provedora</h3>", unsafe_allow_html=True)
     busca = st.text_input('Digite parte do nome da provedora (não importa maiúsculo/minúsculo):')
     if busca:
         resultado = df_grouped[df_grouped[df_grouped.columns[0]].str.contains(busca, case=False, na=False)]
         if not resultado.empty:
-            st.write('Resultado da busca:')
-            st.dataframe(resultado)
+            st.success(f'Encontrado(s) {len(resultado)} resultado(s):')
+            st.dataframe(resultado, use_container_width=True)
             fig3 = px.bar(
                 resultado,
                 x=resultado.columns[0],
                 y=resultado.columns[1],
                 text=resultado.columns[1],
                 color=resultado.columns[0],
-                color_discrete_sequence=px.colors.sequential.Viridis,
+                color_discrete_sequence=px.colors.qualitative.Bold,
                 labels={resultado.columns[0]: 'OPERADORA', resultado.columns[1]: 'ACESSOS'},
             )
-            fig3.update_traces(texttemplate='%{text:,}', textposition='outside')
+            fig3.update_traces(texttemplate='%{text:,}', textposition='outside', marker_line_width=2, marker_line_color='black')
+            fig3.update_layout(
+                font=dict(size=16),
+                height=400,
+                margin=dict(t=60, r=40, b=40, l=40),
+                bargap=0.25,
+            )
             st.plotly_chart(fig3, use_container_width=True)
         else:
             st.warning('Provedora não encontrada.')
 
 # Sessão opcional: mostrar dados de meio de acesso
 with st.expander('Ver dados de Meio de Acesso'):
-    st.dataframe(df_meio)
+    st.dataframe(df_meio, use_container_width=True)
