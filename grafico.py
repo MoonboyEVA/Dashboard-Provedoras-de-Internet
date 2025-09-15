@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+import unicodedata
+import re
 
 # Configura tema do Plotly para fundo branco e fonte maior
 pio.templates.default = "plotly_white"
@@ -109,14 +111,24 @@ with tab2:
     )
     st.plotly_chart(fig2, use_container_width=True)
 
+def normaliza(texto):
+    # Remove acentos, transforma em maiúsculo e tira caracteres especiais
+    texto = unicodedata.normalize('NFKD', str(texto)).encode('ASCII', 'ignore').decode('ASCII')
+    texto = re.sub(r'[^A-Z0-9]', '', texto.upper())
+    return texto
+
 with tab3:
     st.markdown("<h3 style='color: #34495e;'>Buscar Provedora</h3>", unsafe_allow_html=True)
     busca = st.text_input('Digite o nome da provedora:')
     if busca:
-        resultado = df_grouped[df_grouped[df_grouped.columns[0]].str.contains(busca, case=False, na=False)]
+        busca_norm = normaliza(busca)
+        # Cria coluna temporária normalizada para busca
+        df_grouped['__norm'] = df_grouped[df_grouped.columns[0]].apply(normaliza)
+        resultado = df_grouped[df_grouped['__norm'].str.contains(busca_norm, na=False)]
+        df_grouped.drop(columns='__norm', inplace=True)
         if not resultado.empty:
             st.success(f'Encontrado(s) {len(resultado)} resultado(s):')
-            st.dataframe(resultado, use_container_width=True)
+            st.dataframe(resultado.drop(columns='__norm'), use_container_width=True)
             fig3 = px.bar(
                 resultado,
                 x=resultado.columns[0],
