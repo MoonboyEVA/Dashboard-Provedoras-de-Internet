@@ -43,10 +43,10 @@ with col2:
 
 # Tabs para dividir o dashboard
 tab1, tab2, tab3, tab4 = st.tabs([
-    '📊 Comparar Provedoras',
-    '🏆 Ranking Horizontal',
+    '📊 Comparação entre Provedores',
+    '🏆 Acessos por Provedora',
     '🔎 Buscar Provedora',
-    '🛠 Meios de Acesso'
+    '🛜 Meios de Acesso'
 ])
 
 with tab1:
