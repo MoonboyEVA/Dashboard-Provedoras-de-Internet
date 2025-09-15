@@ -16,9 +16,11 @@ df_meio = pd.read_excel('Meio_Acesso.xlsx')
 df_mercado[df_mercado.columns[0]] = df_mercado[df_mercado.columns[0]].str.upper()
 df_meio[df_meio.columns[0]] = df_meio[df_meio.columns[0]].str.upper()
 
-# Corrige nome específico
+# Corrige nomes específicos para unificar em "N-MULTIFIBRA"
 df_mercado[df_mercado.columns[0]] = df_mercado[df_mercado.columns[0]].replace({
-    'N-MULTIMIDIA TELECOMUNICACOES LTDA': 'N-MULTIFIBRA'
+    'N-MULTIMIDIA TELECOMUNICACOES LTDA': 'N-MULTIFIBRA',
+    'NMULTIFIBRA TELECOMUNICACAO LTDA': 'N-MULTIFIBRA',
+    'NMULTIFIBRA': 'N-MULTIFIBRA'
 })
 
 # Agrupa acessos por provedora
