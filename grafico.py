@@ -111,7 +111,7 @@ with tab2:
 
 with tab3:
     st.markdown("<h3 style='color: #34495e;'>Buscar Provedora</h3>", unsafe_allow_html=True)
-    busca = st.text_input('Digite parte do nome da provedora (não importa maiúsculo/minúsculo):')
+    busca = st.text_input('Digite o nome da provedora:')
     if busca:
         resultado = df_grouped[df_grouped[df_grouped.columns[0]].str.contains(busca, case=False, na=False)]
         if not resultado.empty:
