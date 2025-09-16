@@ -159,21 +159,21 @@ with tab3:
 
 with tab4:
     st.markdown("<h3 style='color: #34495e;'>Meios de Acesso</h3>", unsafe_allow_html=True)
-    st.write("Distribuição dos acessos por tipo de meio de acesso.")
-    # Supondo que a primeira coluna é o nome do meio e a segunda é o total de acessos
+    st.write("Visualize a participação de cada tecnologia de acesso.")
     fig_pizza = px.pie(
         df_meio,
         names=df_meio.columns[0],
         values=df_meio.columns[1],
         color_discrete_sequence=px.colors.qualitative.Bold,
         hole=0.3,
-        labels={df_meio.columns[0]: 'Meio de Acesso', df_meio.columns[1]: 'Acessos'}
+        labels={df_meio.columns[0]: 'Tipo', df_meio.columns[1]: 'Acessos'},
+        title="Distribuição dos Meios de Acesso"
     )
     fig_pizza.update_traces(textinfo='percent+label', pull=[0.05]*len(df_meio))
     fig_pizza.update_layout(
         font=dict(size=16),
         margin=dict(t=60, r=40, b=40, l=40),
-        legend_title_text='Meio de Acesso',
+        legend_title_text='Tipo',
         height=500
     )
     st.plotly_chart(fig_pizza, use_container_width=True)
