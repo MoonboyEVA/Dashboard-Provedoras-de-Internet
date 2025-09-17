@@ -41,11 +41,10 @@ with col1:
 with col2:
     st.write("")
 
-# Tabs para dividir o dashboard
-tab1, tab2, tab3, tab4 = st.tabs([
+# Tabs para dividir o dashboard (removendo "Buscar Provedora")
+tab1, tab2, tab3 = st.tabs([
     '📊 Comparação entre Provedores',
     '🏆 Acessos por Provedora',
-    '🔎 Buscar Provedora',
     '🛜 Meios de Acesso'
 ])
 
@@ -125,48 +124,10 @@ with tab2:
     )
     st.plotly_chart(fig2, use_container_width=True)
 
-def normaliza(texto):
-    # Remove acentos, transforma em maiúsculo e tira caracteres especiais
-    texto = unicodedata.normalize('NFKD', str(texto)).encode('ASCII', 'ignore').decode('ASCII')
-    texto = re.sub(r'[^A-Z0-9]', '', texto.upper())
-    return texto
-
-with tab3:
-    st.markdown("<h3 style='color: #34495e;'>Buscar Provedora</h3>", unsafe_allow_html=True)
-    busca = st.text_input('Digite o nome da provedora:')
-    if busca:
-        busca_norm = normaliza(busca)
-        # Cria coluna temporária normalizada para busca
-        df_grouped['__norm'] = df_grouped[df_grouped.columns[0]].apply(normaliza)
-        resultado = df_grouped[df_grouped['__norm'].str.contains(busca_norm, na=False)]
-        df_grouped.drop(columns='__norm', inplace=True)
-        if not resultado.empty:
-            st.success(f'Encontrado(s) {len(resultado)} resultado(s):')
-            st.dataframe(resultado.drop(columns='__norm'), use_container_width=True)
-            fig3 = px.bar(
-                resultado,
-                x=resultado.columns[0],
-                y=resultado.columns[1],
-                text=resultado.columns[1],
-                color=resultado.columns[0],
-                color_discrete_sequence=px.colors.qualitative.Bold,
-                labels={resultado.columns[0]: 'OPERADORA', resultado.columns[1]: 'ACESSOS'},
-            )
-            fig3.update_traces(texttemplate='%{text:,}', textposition='outside', marker_line_width=2, marker_line_color='black')
-            fig3.update_layout(
-                font=dict(size=16),
-                height=400,
-                margin=dict(t=60, r=40, b=40, l=40),
-                bargap=0.25,
-            )
-            st.plotly_chart(fig3, use_container_width=True)
-        else:
-            st.warning('Provedora não encontrada.')
-
 # Renomeia a coluna A do df_meio para "Tecnologias"
 df_meio.rename(columns={df_meio.columns[0]: "Tecnologias"}, inplace=True)
 
-with tab4:
+with tab3:
     st.markdown("<h3 style='color: #34495e;'>Meios de Acesso</h3>", unsafe_allow_html=True)
     st.write("Visualize a participação de cada tecnologia de acesso.")
     fig_pizza = px.pie(
