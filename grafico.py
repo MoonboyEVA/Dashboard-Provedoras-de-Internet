@@ -58,6 +58,7 @@ with tab1:
         default=provedoras[:5]
     )
     df_selecionadas = df_grouped[df_grouped[df_grouped.columns[0]].isin(selecionadas)]
+    max_acessos = df_selecionadas[df_selecionadas.columns[1]].max()
     fig = px.bar(
         df_selecionadas,
         x=df_selecionadas.columns[0],
@@ -70,10 +71,15 @@ with tab1:
     )
     fig.update_traces(
         texttemplate='%{text:,}',
-        textposition='outside',
+        textposition='auto',
         marker_line_width=2,
         marker_line_color='black',
         hovertemplate='<b>%{x}</b><br>Acessos: %{y:,}<extra></extra>'
+    )
+    # Ajusta a escala do eixo Y para dar mais espaço visual
+    fig.update_yaxes(
+        range=[0, max_acessos * 1.15],  # 15% acima do maior valor
+        tickformat=',d'
     )
     fig.update_layout(
         xaxis_title='Operadora',
@@ -82,7 +88,7 @@ with tab1:
         margin=dict(t=80, r=40, b=40, l=40),
         font=dict(size=16),
         height=500,
-        bargap=0.25,
+        bargap=0.45,  # barras mais finas
     )
     fig.update_xaxes(tickangle=45, automargin=True)
     st.plotly_chart(fig, use_container_width=True)
