@@ -9,7 +9,7 @@ import re
 pio.templates.default = "plotly_white"
 
 # Carrega as planilhas
-df_mercado = pd.read_excel('acessos1.xlsx')  # Atualizado para usar a planilha mais recente
+df_mercado = pd.read_excel('Participacao_Mercado.xlsx')
 df_meio = pd.read_excel('Meio_Acesso.xlsx')
 
 # Unifica nomes e coloca tudo em maiúsculo
